@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'PMADI')</title>
 
     {{-- Favicons --}}
-    <link rel="icon" href="{{asset('img/favicon.png')}}">
+    <link rel="icon" href="{{asset('img/favicon.ico')}}">
     <link rel="apple-touch-icon" href="{{asset('img/apple-touch-icon.png')}}">
 
     {{-- Fuentes --}}
@@ -58,5 +59,7 @@
 
     {{-- Archivos js propios --}}
     <script src="{{ asset('js/main.js')}}"></script>
+    {{-- <script src="{{ asset('js/verification.js') }}"></script> --}}
+
 </body>
 </html>

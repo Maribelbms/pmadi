@@ -19,12 +19,13 @@ return new class extends Migration
             $table->enum('distrital_educacion', ['el alto1', 'el alto2', 'el alto3']); 
             $table->integer('distrito'); 
             $table->string('direccion', 300); 
-            $table->enum('estado', ['Activa', 'Inactiva']);
+            $table->enum('estado', ['Activa', 'Inactiva'])->default('Activa');
             $table->timestamps(); 
             $table->softDeletes(); 
 
         });
     }
+    
 
     /**
      * Reverse the migrations.

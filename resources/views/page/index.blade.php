@@ -82,6 +82,7 @@
                 <p>
                   Este programa está enfocado en garantizar que los niños reciban el apoyo necesario para completar su educación inicial, ofreciendo asistencia económica a sus familias.
                 </p>
+              </p>
               </div>
             </div>
           </div>
@@ -110,7 +111,10 @@
                   <input type="text" class="form-control form-control-lg text-center" id="ci" placeholder="Ingrese el CI del tutor" required>
                 </div>
                 <div class="d-grid gap-2">
-                  <button type="submit" class="btn-get-started">Consultar</button>
+                  <button type="submit" class="btn-get-started">
+                    <span id="loading-spinner" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                    Consultar
+                </button>
                 </div>
               </form>
             </div>

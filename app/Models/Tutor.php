@@ -20,21 +20,31 @@ class Tutor extends Model
         'tercer_apellido_tutor',
         'ci_tutor',
         'expedido_tutor',
-        'gestion_id',
     ];
     protected $dates = ['deleted_at'];
+    // public function estudiantes()
+    // {
+    //     return $this->hasMany(EstudianteTutor::class, 'tutor_id');
+    // }
     public function estudiantes()
     {
-        return $this->hasMany(Estudiante::class, 'tutor_id');
+        return $this->belongsToMany(Estudiante::class, 'estudiante_tutor', 'tutor_id', 'estudiante_id')
+            ->withPivot('gestion_id', 'activo')
+            ->withTimestamps();
     }
-    public function gestion(){
+
+    public function gestion()
+    {
         return $this->belongsTo(Gestion::class, 'gestion_id');
     }
-    public function pagos(){
+    public function pagos()
+    {
         return $this->hasMany(Pago::class, 'tutor_id');
     }
-    public function reviciones(){
+    public function reviciones()
+    {
         return $this->hasMany(Revicion::class, 'tutor_id');
     }
+
 
 }

@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('paralelo'); // Paralelo (ej. A, B)
             $table->integer('porcentaje_asistencia')->default(0);
             $table->enum('habilitado', ['si', 'no']);
-            $table->bigInteger('tutor_id')->unsigned()->nullable(); 
+            $table->bigInteger('tutor_id')->unsigned(); 
             $table->bigInteger('gestion_id')->unsigned(); 
             $table->timestamps(); 
             $table->softDeletes(); 

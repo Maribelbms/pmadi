@@ -21,8 +21,8 @@ class TutorEstudianteResource extends Resource
     protected static ?string $model = Estudiante::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Tutores y Estudiantes';
-protected static ?string $navigationGroup = 'Gestión Académica';
+    protected static ?string $navigationLabel = 'Ingreso de Datos';
+    protected static ?string $navigationGroup = 'Tutores y Estudiantes';
 
     public static function form(Form $form): Form
     {
@@ -32,34 +32,66 @@ protected static ?string $navigationGroup = 'Gestión Académica';
                     // Paso 1: Ingreso de los detalles del Tutor
                     Forms\Components\Wizard\Step::make('Detalles del Tutor')
                         ->schema([
-                            Forms\Components\TextInput::make('primer_nombre_tutor')
-                                ->label('Primer Nombre del Tutor')
-                                ->required()
-                                ->maxLength(50),
-
-                            Forms\Components\TextInput::make('segundo_nombre_tutor')
-                                ->label('Segundo Nombre del Tutor')
-                                ->maxLength(50),
-
-                            Forms\Components\TextInput::make('primer_apellido_tutor')
-                                ->label('Primer Apellido del Tutor')
-                                ->required()
-                                ->maxLength(100),
-
-                            Forms\Components\TextInput::make('segundo_apellido_tutor')
-                                ->label('Segundo Apellido del Tutor')
-                                ->required()
-                                ->maxLength(length: 100),
-
-                            Forms\Components\TextInput::make('tercer_apellido_tutor')
-                                ->label('Tercer Apellido del Tutor')
-                                ->maxLength(100),
-
                             Forms\Components\TextInput::make('ci_tutor')
                                 ->label('CI del Tutor')
                                 ->required()
                                 ->maxLength(20)
-                                ->unique(),
+                                ->reactive() // Habilita la actualización reactiva
+                                ->afterStateUpdated(function ($state, $set, $get) {
+                                    $tutor = Tutor::where('ci_tutor', $state)->first();
+
+                                    if ($tutor) {
+                                        // Autocompletar datos del tutor
+                                        $set('primer_nombre_tutor', $tutor->primer_nombre_tutor);
+                                        $set('segundo_nombre_tutor', $tutor->segundo_nombre_tutor);
+                                        $set('primer_apellido_tutor', $tutor->primer_apellido_tutor);
+                                        $set('segundo_apellido_tutor', $tutor->segundo_apellido_tutor);
+                                        $set('tercer_apellido_tutor', $tutor->tercer_apellido_tutor);
+                                        $set('expedido_tutor', $tutor->expedido_tutor);
+                                        $set('gestion_id', $tutor->gestion_id);
+                                    } else {
+                                        // Habilitar campos para ingresar nuevos datos
+                                        $set('primer_nombre_tutor', null);
+                                        $set('segundo_nombre_tutor', null);
+                                        $set('primer_apellido_tutor', null);
+                                        $set('segundo_apellido_tutor', null);
+                                        $set('tercer_apellido_tutor', null);
+                                        $set('expedido_tutor', null);
+                                        $set('gestion_id', null);
+                                    }
+                                }),
+
+                            Forms\Components\TextInput::make('primer_nombre_tutor')
+                                ->label('Primer Nombre del Tutor')
+                                ->required()
+                                ->maxLength(50)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
+
+                            Forms\Components\TextInput::make('segundo_nombre_tutor')
+                                ->label('Segundo Nombre del Tutor')
+                                ->maxLength(50)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
+
+                            Forms\Components\TextInput::make('primer_apellido_tutor')
+                                ->label('Primer Apellido del Tutor')
+                                ->required()
+                                ->maxLength(100)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
+
+                            Forms\Components\TextInput::make('segundo_apellido_tutor')
+                                ->label('Segundo Apellido del Tutor')
+                                ->maxLength(100)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
+
+                            Forms\Components\TextInput::make('tercer_apellido_tutor')
+                                ->label('Tercer Apellido del Tutor')
+                                ->maxLength(100)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
 
                             Forms\Components\Select::make('expedido_tutor')
                                 ->label('Expedición del CI del Tutor')
@@ -74,40 +106,52 @@ protected static ?string $navigationGroup = 'Gestión Académica';
                                     'PD' => 'Pando',
                                     'BN' => 'Beni',
                                 ])
-                                ->required(),
+                                ->required()
+                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
 
                             Forms\Components\Select::make('gestion_id')
                                 ->label('Gestión')
                                 ->relationship('gestion', 'nombre_gestion')
                                 ->required(),
-                        ])
-                        ->model(Tutor::class) // Establece el modelo a Tutor en este paso
-                        ->afterStateUpdated(function ($state, $livewire) {
-                            // Guarda el ID del Tutor creado para usarlo en el paso de Estudiante
-                            $tutor = Tutor::create($state);
-                            $livewire->data['tutor_id'] = $tutor->id;
-                        }),
-
+                        ])->model(Tutor::class),
+ 
+                   
                     // Paso 2: Ingreso de los detalles del Estudiante
                     Forms\Components\Wizard\Step::make('Detalles del Estudiante')
                         ->schema([
                             Forms\Components\TextInput::make('primer_nombre')
                                 ->label('Primer Nombre del Estudiante')
                                 ->required()
-                                ->maxLength(50),
+                                ->maxLength(50)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('primer_nombre', strtoupper($state));
+                                }),
 
                             Forms\Components\TextInput::make('segundo_nombre')
                                 ->label('Segundo Nombre del Estudiante')
-                                ->maxLength(50),
+                                ->maxLength(50)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('segundo_nombre', strtoupper($state));
+                                }),
 
                             Forms\Components\TextInput::make('primer_apellido')
                                 ->label('Primer Apellido del Estudiante')
                                 ->required()
-                                ->maxLength(100),
+                                ->maxLength(100)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('primer_apellido', strtoupper($state));
+                                }),
 
                             Forms\Components\TextInput::make('segundo_apellido')
                                 ->label('Segundo Apellido del Estudiante')
-                                ->maxLength(100),
+                                ->maxLength(100)
+                                ->extraAttributes(['style' => 'text-transform: uppercase;'])
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('segundo_apellido', strtoupper($state));
+                                }),
 
                             Forms\Components\TextInput::make('ci')
                                 ->label('CI del Estudiante')
@@ -147,13 +191,14 @@ protected static ?string $navigationGroup = 'Gestión Académica';
                             Forms\Components\TextInput::make('nivel')
                                 ->label('Nivel')
                                 ->default('INICIAL')
-                                ->required(),
+                                ->required()
+                                ->disabled(),
 
                             Forms\Components\Select::make('curso')
                                 ->label('Curso')
                                 ->options([
-                                    '1' => 'primera seccion',
-                                    '2' => 'segunda seccion',
+                                    '1' => 'PRIMERA SECCION',
+                                    '2' => 'SEGUNDA SECCION',
                                 ])
                                 ->required(),
 
@@ -168,15 +213,22 @@ protected static ?string $navigationGroup = 'Gestión Académica';
                                 ->minValue(0)
                                 ->maxValue(100)
                                 ->step(0.01)
-                                ->required(),
+                                ->required()
+                                ->reactive() // Hacer reactivo el campo para que detecte cambios
+                                ->afterStateUpdated(function ($state, $set) {
+                                    $set('habilitado', $state >= 51 ? 'si' : 'no');
+                                }),
 
-                                Forms\Components\Hidden::make('tutor_id'),
+                            Forms\Components\Hidden::make('habilitado'),
+
+                            Forms\Components\Hidden::make('tutor_id'),
                         ])
                         ->model(Estudiante::class),
                 ])->columnSpanFull()
-                
+
+
             ]);
-        
+
     }
 
     public static function table(Table $table): Table

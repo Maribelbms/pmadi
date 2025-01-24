@@ -26,5 +26,35 @@ class UnidadEducativa extends Model
     {
         return $this->hasMany(Pago::class, 'tutor_id');
     }
+    public function directores()
+    {
+        return $this->hasMany(User::class, 'unidad_educativa_id', 'id_unidad_educativa')
+            ->where('role_id', 4);
+    }
+
+    public function profesores()
+    {
+        return $this->belongsToMany(User::class, 'profesor_unidad', 'unidad_educativa_id', 'user_id', 'profesor_id')
+            ->where('role_id', 4);
+    }
+    // Relación con el director (uno a uno)
+    public function director()
+    {
+        return $this->hasOne(Director::class, 'unidad_educativa_id', 'id_unidad_educativa');
+    }
+
+    // Relación con la tabla intermedia `profesor_unidad`
+    public function asignaciones()
+    {
+        return $this->hasMany(ProfesorUnidad::class, 'unidad_educativa_id');
+    }
+    public function profesoresUnidades()
+    {
+        return $this->hasMany(ProfesorUnidad::class, 'unidad_educativa_id');
+    }
+    
+
+    
+
 
 }

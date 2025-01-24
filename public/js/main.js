@@ -1,5 +1,5 @@
 
-(function() {
+(function () {
   "use strict";
 
 
@@ -41,7 +41,7 @@
    * Toggle mobile nav dropdowns
    */
   document.querySelectorAll('.navmenu .toggle-dropdown').forEach(navmenu => {
-    navmenu.addEventListener('click', function(e) {
+    navmenu.addEventListener('click', function (e) {
       e.preventDefault();
       this.parentNode.classList.toggle('active');
       this.parentNode.nextElementSibling.classList.toggle('dropdown-active');
@@ -56,9 +56,9 @@
   if (preloader) {
     window.addEventListener('load', () => {
       setTimeout(() => {
-        preloader.remove();   
+        preloader.remove();
         // preloader.style.display = 'none';
-      }, 300); 
+      }, 300);
     });
   }
 
@@ -75,20 +75,82 @@
   /** 
    * Verficiar Datos
    */
-  document.getElementById('verification-form').addEventListener('submit', function(event) {
+  /**
+ * Verificación de Datos mediante consulta al servidor
+ */
+  document.getElementById('verification-form').addEventListener('submit', function (event) {
     event.preventDefault();
-    
-    var ciInput = document.getElementById('ci').value;
-    
-    // Simular verificación (cambiar esto por la lógica real)
-    if (ciInput === "12345678") {
-      document.getElementById('verification-result').style.display = "block";
-      document.querySelector('.alert-info').innerHTML = "<strong>Resultado:</strong> El CI " + ciInput + " ha sido verificado correctamente.";
-    } else {
-      alert("CI no encontrado. Por favor, verifique e intente de nuevo.");
-    }
-  });
 
+    const spinner = document.getElementById('loading-spinner');
+    const resultDiv = document.getElementById('verification-result');
+    const ci = document.getElementById('ci').value;
+
+    spinner.style.display = 'inline-block'; // Mostrar spinner
+
+    fetch('/verificar-datos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ ci })
+    })
+      .then(response => response.json())
+      .then(data => {
+        spinner.style.display = 'none'; // Ocultar spinner
+        resultDiv.style.display = 'block';
+
+        if (data.success) {
+          resultDiv.innerHTML = `
+                  <div class="alert alert-success">
+                      <strong>Datos encontrados:</strong>
+                      <strong>Datos del Tutor:</strong>
+                      <ul>
+                        <li>Nombre Completo: ${data.tutor.primer_nombre_tutor} ${data.tutor.segundo_nombre_tutor || ''} ${data.tutor.primer_apellido_tutor} ${data.tutor.segundo_apellido_tutor || ''} ${data.tutor.tercer_apellido_tutor || ''}</li>
+                        <li>CI: ${data.tutor.ci_tutor}</li>
+                        <li>Expedido: ${data.tutor.expedido_tutor}</li>
+                      </ul>
+                      
+                      <strong>Estudiantes:</strong>
+                      <ul>
+                        ${data.tutor.estudiantes.map(est => `
+                          <li>
+                            <ul>
+                              <li>${est.primer_nombre} ${est.segundo_nombre || ''} ${est.primer_apellido} ${est.segundo_apellido || ''}</li>
+                              <li>CI: ${est.ci}</li>
+                              <li>RUDE: ${est.rude}</li>
+                              <li>Nivel: ${est.nivel}</li>
+                              <li>Curso: ${est.curso}</li>
+                              <li>Paralelo: ${est.paralelo}</li>
+                              <li>Habilitado: ${est.habilitado}</li>
+                            </ul>
+                          </li>
+                        `).join('')}
+                      </ul>
+                      <br>
+                        <p style="color: gray; font-size: small; margin-top: 10px;">
+                           Si algún dato es incorrecto, por favor acérquese al colegio correspondiente para solicitar la corrección.
+                        </p>
+                  </div>
+              `;
+        } else {
+          resultDiv.innerHTML = `
+                  <div class="alert alert-danger">
+                      ${data.message}
+                  </div>
+              `;
+        }
+      })
+      .catch(error => {
+        spinner.style.display = 'none'; // Ocultar spinner
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+              <div class="alert alert-danger">
+                  Ocurrió un error. Por favor, inténtalo de nuevo.
+              </div>
+          `;
+      });
+  });
 
   /**
    * Scroll top button
@@ -128,7 +190,7 @@
    * Init swiper sliders
    */
   function initSwiper() {
-    document.querySelectorAll(".init-swiper").forEach(function(swiperElement) {
+    document.querySelectorAll(".init-swiper").forEach(function (swiperElement) {
       let config = JSON.parse(
         swiperElement.querySelector(".swiper-config").innerHTML.trim()
       );
@@ -153,13 +215,13 @@
   /**
    * Init isotope layout and filters
    */
-  document.querySelectorAll('.isotope-layout').forEach(function(isotopeItem) {
+  document.querySelectorAll('.isotope-layout').forEach(function (isotopeItem) {
     let layout = isotopeItem.getAttribute('data-layout') ?? 'masonry';
     let filter = isotopeItem.getAttribute('data-default-filter') ?? '*';
     let sort = isotopeItem.getAttribute('data-sort') ?? 'original-order';
 
     let initIsotope;
-    imagesLoaded(isotopeItem.querySelector('.isotope-container'), function() {
+    imagesLoaded(isotopeItem.querySelector('.isotope-container'), function () {
       initIsotope = new Isotope(isotopeItem.querySelector('.isotope-container'), {
         itemSelector: '.isotope-item',
         layoutMode: layout,
@@ -168,8 +230,8 @@
       });
     });
 
-    isotopeItem.querySelectorAll('.isotope-filters li').forEach(function(filters) {
-      filters.addEventListener('click', function() {
+    isotopeItem.querySelectorAll('.isotope-filters li').forEach(function (filters) {
+      filters.addEventListener('click', function () {
         isotopeItem.querySelector('.isotope-filters .filter-active').classList.remove('filter-active');
         this.classList.add('filter-active');
         initIsotope.arrange({
@@ -195,7 +257,7 @@
   /**
    * Correct scrolling position upon page load for URLs containing hash links.
    */
-  window.addEventListener('load', function(e) {
+  window.addEventListener('load', function (e) {
     if (window.location.hash) {
       if (document.querySelector(window.location.hash)) {
         setTimeout(() => {

@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Providers\Filament;
-
+use App\Http\Middleware\EnsureUserIsActive;
+use Filament\Facades\Filament;
+use Illuminate\Validation\ValidationException;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -17,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+// use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -50,9 +53,16 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                EnsureUserIsActive::class,
             ])
+            // ->plugins([
+            //     FilamentShieldPlugin::make(),
+            // ])
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ]);
     }
 }

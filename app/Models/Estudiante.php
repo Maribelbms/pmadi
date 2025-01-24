@@ -28,23 +28,23 @@ class Estudiante extends Model
         'paralelo',
         'porcentaje_asistencia',
         'habilitado',
-        'tutor_id',
-        'gestion_id',
         
     ];
 
     protected $dates = ['deleted_at'];
-    public function tutor()
-    {
-        return $this->belongsTo(Tutor::class, 'tutor_id');
-    }
+    public function tutores()
+{
+    return $this->belongsToMany(Tutor::class, 'estudiante_tutor', 'estudiante_id', 'tutor_id')
+                ->withPivot('gestion_id', 'activo')
+                ->withTimestamps();
+}
     public function pagos()
     {
         return $this->hasMany(Pago::class, 'estudiante_id');
     }
-    public function gestion()
+    public function tutorActivo()
     {
-        return $this->belongsTo(Gestion::class, 'gestion_id');
+        return $this->hasOne(EstudianteTutor::class, 'estudiante_id')->where('activo', true)->with('tutor');
     }
 
     public function reviciones()

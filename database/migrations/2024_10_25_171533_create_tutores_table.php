@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('primer_nombre_tutor');
             $table->string('segundo_nombre_tutor')->nullable();
             $table->string('primer_apellido_tutor');
-            $table->string('segundo_apellido_tutor');
+            $table->string('segundo_apellido_tutor')->nullable();
             $table->string('tercer_apellido_tutor')->nullable();
             $table->string('ci_tutor')->unique(); // Carnet de identidad único del tutor
             $table->string('expedido_tutor'); // Lugar de expedición del CI del tutor

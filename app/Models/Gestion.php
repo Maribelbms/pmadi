@@ -25,14 +25,7 @@ class Gestion extends Model
     {
         return $this->hasMany(Pago::class, 'gestion_id');
     }
-    public function estudiante()
-    {
-        return $this->hasMany(Estudiante::class, 'gestion_id');
-    }   
-    public function tutor()
-    {
-        return $this->hasMany(Tutor::class, 'gestion_id');
-    }   
+      
     public function reportes_bancarios()
     {
         return $this->hasMany(ReporteBancario::class, 'gestion_id');
