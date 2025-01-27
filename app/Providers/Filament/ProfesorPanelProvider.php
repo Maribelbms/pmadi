@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Providers\Filament;
-use App\Http\Middleware\EnsureUserIsActive;
-use Filament\Facades\Filament;
-use Illuminate\Validation\ValidationException;
+
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -19,29 +17,26 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-// use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 
-class AdminPanelProvider extends PanelProvider
+class ProfesorPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->default()
-            ->id('admin')
-            ->path('inicio')
-            ->login()
+            ->id('profesor')
+            ->path('profesor')
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverResources(in: app_path('Filament/Profesor/Resources'), for: 'App\\Filament\\Profesor\\Resources')
+            ->discoverPages(in: app_path('Filament/Profesor/Pages'), for: 'App\\Filament\\Profesor\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Profesor\Pages\ProfesorDashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Profesor/Widgets'), for: 'App\\Filament\\Profesor\\Widgets')
             ->widgets([
-                // Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
+                Widgets\AccountWidget::class,
+                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -53,16 +48,9 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                EnsureUserIsActive::class,
             ])
-            // ->plugins([
-            //     FilamentShieldPlugin::make(),
-            // ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
             ]);
     }
 }

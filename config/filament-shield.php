@@ -81,7 +81,7 @@ return [
     'discovery' => [
         'discover_all_resources' => false,
         'discover_all_widgets' => false,
-        'discover_all_pages' => false,
+        'discover_all_pages' => true,
     ],
 
     'register_role_policy' => [

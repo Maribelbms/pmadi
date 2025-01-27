@@ -52,6 +52,10 @@ class UnidadEducativa extends Model
     {
         return $this->hasMany(ProfesorUnidad::class, 'unidad_educativa_id');
     }
+    public function estudiantesGestiones()
+    {
+        return $this->hasMany(EstudianteGestion::class, 'unidad_educativa_id');
+    }
     
 
     

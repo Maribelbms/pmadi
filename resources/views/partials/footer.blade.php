@@ -45,8 +45,5 @@
       Desarrollado por <a href="#">BMSN</a>
     </div>
   </div>
-  
-  @livewireScripts
-  
 
 </footer>

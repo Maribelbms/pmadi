@@ -29,60 +29,51 @@ class ProfesorResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('ci')
-                ->label('Cédula de Identidad')
-                ->required()
-                ->unique(ignoreRecord: true)
-                ->maxLength(10),
-
-            TextInput::make('primer_nombre')
-                ->label('Primer Nombre')
-                ->required()
-                ->maxLength(255),
-
-            TextInput::make('primer_apellido')
-                ->label('Primer Apellido')
-                ->required()
-                ->maxLength(255),
-
-            TextInput::make('email')
-                ->label('Correo Electrónico')
-                ->required()
-                ->email()
-                ->unique(ignoreRecord: true),
-
-            TextInput::make('telefono')
-                ->label('Teléfono')
-                ->nullable()
-                ->tel()
-                ->maxLength(15),
-
-            // Repetidor para asignaciones
-            Repeater::make('asignaciones')
-    ->label('Asignaciones')
-    ->schema([
-        Select::make('unidad_educativa_id')
-                ->label('Unidad Educativa')
-                ->options(UnidadEducativa::all()->pluck('nombre_unidad', 'id_unidad_educativa'))
-                ->searchable()
-                ->required(),
-
-
-        TextInput::make('nivel')
+                // Datos para la tabla `users`
+            // Forms\Components\TextInput::make('name')
+            // ->label('Nombre Completo')
+            // ->required(),
+        Forms\Components\TextInput::make('email')
+            ->label('Correo Electrónico')
+            ->email()
+            ->required(),
+        Forms\Components\TextInput::make('password')
+            ->label('Contraseña')
+            ->password()
+            ->required()
+            ->minLength(8),
+        
+        // Datos para la tabla `profesores`
+        Forms\Components\TextInput::make('ci')
+            ->label('Cédula de Identidad')
+            ->required()
+            ->unique(ignoreRecord: true),
+        Forms\Components\TextInput::make('primer_nombre')
+            ->required(),
+        Forms\Components\TextInput::make('segundo_nombre'),
+        Forms\Components\TextInput::make('primer_apellido')
+            ->required(),
+        Forms\Components\TextInput::make('segundo_apellido'),
+        Forms\Components\TextInput::make('telefono')
+            ->label('Teléfono'),
+        Forms\Components\Toggle::make('activo')
+            ->label('Activo')
+            ->default(true),
+        
+        // Datos para la tabla `profesor_unidad`
+        Forms\Components\Select::make('unidad_educativa_id' )
+            ->relationship('unidadEducativa', 'nombre_unidad')
+            ->label('Unidad Educativa')
+            ->required(),
+        Forms\Components\TextInput::make('nivel')
             ->label('Nivel Educativo')
             ->required(),
-
-        TextInput::make('curso')
+        Forms\Components\TextInput::make('curso')
             ->label('Curso')
             ->required(),
-
-        TextInput::make('paralelo')
+        Forms\Components\TextInput::make('paralelo')
             ->label('Paralelo')
             ->required(),
-    ])
-    ->collapsible()
-    ->defaultItems(1),
-
             ]);
     }
 

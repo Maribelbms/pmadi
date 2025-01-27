@@ -23,8 +23,9 @@ class EstudianteTutor extends Model
 
     public function tutor()
     {
-        return $this->belongsTo(Tutor::class, 'tutor_id');
+        return $this->belongsTo(Tutor::class, 'tutor_id', 'id_tutor');
     }
+    
 
     public function gestion()
     {

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('directores', function (Blueprint $table) {
-            $table->unique('unidad_educativa_id', 'unique_unidad_educativa_id');
+        Schema::table('estudiante_gestion', function (Blueprint $table) {
+            $table->softDeletes(); // Esto agrega la columna deleted_at
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('directores', function (Blueprint $table) {
-            //
+        Schema::table('estudiante_gestion', function (Blueprint $table) {
+            $table->dropSoftDeletes();
         });
     }
 };

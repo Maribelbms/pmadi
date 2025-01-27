@@ -34,6 +34,10 @@ class Gestion extends Model
     {
         return $this->hasMany(Observacion::class, 'gestion_id');
     }
+    public function estudiantesGestiones()
+    {
+        return $this->hasMany(EstudianteGestion::class, 'gestion_id');
+    }
 
 
 }

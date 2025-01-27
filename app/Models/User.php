@@ -75,11 +75,11 @@ public function profesor()
 {
     return $this->hasOne(Profesor::class, 'user_id');
 }
-//  public function canAccessPanel(Panel $panel): bool
+ public function canAccessPanel(Panel $panel): bool
 
-//  {
-//      return true;
-//  }
+ {
+     return true;
+ }
 
 
 

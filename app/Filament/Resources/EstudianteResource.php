@@ -24,10 +24,10 @@ class EstudianteResource extends Resource
 {
     protected static ?string $model = Estudiante::class;
 
-    protected static ?string $navigationGroup = 'Registro';
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $pluralLabel = 'Estudiantes';
-    protected static ?string $label = 'Estudiante';
+    // protected static ?string $navigationGroup = 'Registro';
+    // protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    // protected static ?string $pluralLabel = 'Estudiantes';
+    // protected static ?string $label = 'Estudiante';
     public static function form(Form $form): Form
     {
         return $form

@@ -30,5 +30,5 @@
       </nav>
 
     </div>
-    @livewireStyles
+  
   </header>

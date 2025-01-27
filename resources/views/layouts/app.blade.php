@@ -26,6 +26,8 @@
 
     {{-- Archivos css propios --}}
     <link rel="stylesheet" href="{{ asset('css/main.css')}}">
+
+    @livewireStyles
     
 </head>
 <body class="index-page">
@@ -36,6 +38,8 @@
     <main class="main">
         @yield('content')
     </main>
+    <livewire:modales.asignar-tutor />
+
 
     {{-- Pie de página --}}
     @include('partials.footer')
@@ -60,6 +64,10 @@
     {{-- Archivos js propios --}}
     <script src="{{ asset('js/main.js')}}"></script>
     {{-- <script src="{{ asset('js/verification.js') }}"></script> --}}
+       
+       @livewireScripts
+       <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x" integrity="sha384-XXXXXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 
+       
 </body>
 </html>

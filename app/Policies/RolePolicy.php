@@ -1,16 +1,7 @@
 <?php
 
 namespace App\Policies;
-use App\Models\Estudiante;
-use App\Policies\EstudiantePolicy;
-use App\Models\Profesor;
-use App\Policies\ProfesorPolicy;
-use App\Models\Tutor;
-use App\Policies\TutorPolicy;
-use App\Models\Director;
-use App\Policies\DirectorPolicy;
-use App\Models\UnidadEducativa;
-use App\Policies\UnidadEducativaPolicy;
+
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -18,15 +9,6 @@ use Illuminate\Auth\Access\HandlesAuthorization;
 class RolePolicy
 {
     use HandlesAuthorization;
-
-    protected $policies = [
-        Estudiante::class => EstudiantePolicy::class,
-        Profesor::class => ProfesorPolicy::class,
-        Tutor::class => TutorPolicy::class,
-        Director::class => DirectorPolicy::class,
-        UnidadEducativa::class => UnidadEducativaPolicy::class,
-        User::class => UserPolicy::class,
-    ];
 
     /**
      * Determine whether the user can view any models.

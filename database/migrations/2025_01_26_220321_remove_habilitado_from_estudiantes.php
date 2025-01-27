@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('directores', function (Blueprint $table) {
-            $table->unique('unidad_educativa_id', 'unique_unidad_educativa_id');
+        Schema::table('estudiantes', function (Blueprint $table) {
+            $table->dropColumn('habilitado');
         });
-        
     }
 
     /**
@@ -22,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('directores', function (Blueprint $table) {
-            //
+        Schema::table('estudiantes', function (Blueprint $table) {
+            $table->boolean('habilitado')->default(true);
         });
     }
 };
