@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +15,9 @@
     {{-- Fuentes --}}
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
 
 
     {{-- Archivos css vendor --}}
@@ -28,8 +31,9 @@
     <link rel="stylesheet" href="{{ asset('css/main.css')}}">
 
     @livewireStyles
-    
+
 </head>
+
 <body class="index-page">
     {{-- Encabezado --}}
     @include('partials.header')
@@ -38,15 +42,16 @@
     <main class="main">
         @yield('content')
     </main>
-    <livewire:modales.asignar-tutor />
+    <livewire:modales.asignar-tutor-modal />
 
 
     {{-- Pie de página --}}
     @include('partials.footer')
-    
+
     {{-- desplazamiento hacia arriba --}}
-    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-    
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
     {{-- PreCarga --}}
     <div id="preloader">
         <img src="{{ asset('img/logo_elalto.png')}}" alt="PMADI Logo" class="preloader-logo">
@@ -63,11 +68,11 @@
 
     {{-- Archivos js propios --}}
     <script src="{{ asset('js/main.js')}}"></script>
-    {{-- <script src="{{ asset('js/verification.js') }}"></script> --}}
-       
-       @livewireScripts
-       <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x" integrity="sha384-XXXXXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+    {{--
+    <script src="{{ asset('js/verification.js') }}"></script> --}}
 
-       
-</body>
+    @livewireScripts
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x" crossorigin="anonymous"></script>
+    
+
 </html>

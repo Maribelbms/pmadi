@@ -24,9 +24,9 @@ class panelesUsuarios extends BaseWidget
                 ->descriptionIcon('heroicon-o-academic-cap'),
 
             // Tarjeta para el total de profesores
-             Card::make('Profesores Registrados', User::role('profesor')->count())
-                 ->description('Profesores registrados')
-                 ->descriptionIcon('heroicon-o-user'),
+            //  Card::make('Profesores Registrados', User::role('profesor')->count())
+            //      ->description('Profesores registrados')
+            //      ->descriptionIcon('heroicon-o-user'),
         ];
     }
 }

@@ -10,34 +10,78 @@ class Revicion extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'reviciones';
-    protected $primaryKey = 'id_revicion';
+    protected $table = 'reviciones'; // Nombre de la tabla
+    protected $primaryKey = 'id_revicion'; // Clave primaria
 
     protected $fillable = [
-        'tipo_entidad',
-        'estudiante_id',
-        'tutor_id',
-        'estado_revicion',
-        'descripcion',
-        'usuario_id',
-        'fecha_revicion',
-    ];
-    protected $dates = [
-        'deleted_at', 'fecha_revicion',
+        'estudiante_id',        // Relación con estudiante
+        'tutor_id',             // Relación con tutor
+        'estado_registro',      // Estado del flujo (inicializacion, en revision, aprobado)
+        'observaciones',        // Observaciones sobre la revisión
+        'fecha_revicion',       // Fecha de la última revisión
     ];
 
+    protected $dates = ['deleted_at', 'fecha_revicion']; // Fechas gestionadas por Laravel
+
+    /**
+     * Relación con el modelo Estudiante.
+     */
     public function estudiante()
     {
         return $this->belongsTo(Estudiante::class, 'estudiante_id', 'id_estudiante');
     }
 
+    /**
+     * Relación con el modelo Tutor.
+     */
     public function tutor()
     {
         return $this->belongsTo(Tutor::class, 'tutor_id', 'id_tutor');
     }
 
-    public function usuario()
+    /**
+     * Cambiar el estado a "en revision".
+     */
+    public function marcarEnRevision()
     {
-        return $this->belongsTo(User::class, 'usuario_id');
+        $this->update([
+            'estado_registro' => 'en revision',
+            'fecha_revicion' => now(),
+        ]);
+    }
+
+    /**
+     * Cambiar el estado a "aprobado".
+     */
+    public function marcarAprobado()
+    {
+        $this->update([
+            'estado_registro' => 'aprobado',
+            'fecha_revicion' => now(),
+        ]);
+    }
+
+    /**
+     * Comprobar si está en estado "aprobado".
+     */
+    public function esAprobado()
+    {
+        return $this->estado_registro === 'aprobado';
+    }
+
+    /**
+     * Comprobar si está en estado "en revision".
+     */
+    public function estaEnRevision()
+    {
+        return $this->estado_registro === 'en revision';
+    }
+
+    /**
+     * Comprobar si está en estado "inicializacion".
+     */
+    public function estaEnInicializacion()
+    {
+        return $this->estado_registro === 'inicializacion';
     }
 }

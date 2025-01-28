@@ -85,5 +85,8 @@ return [
     */
 
     'livewire_loading_delay' => 'default',
+    'livewire' => [
+        'render_hook' => true, // Habilita el renderizado basado en Livewire
+    ],
 
 ];

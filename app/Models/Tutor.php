@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Tutor extends Model
@@ -22,16 +24,16 @@ class Tutor extends Model
         'expedido_tutor',
     ];
     protected $dates = ['deleted_at'];
-    // public function estudiantes()
-    // {
-    //     return $this->hasMany(EstudianteTutor::class, 'tutor_id');
-    // }
     public function estudiantes()
     {
-        return $this->belongsToMany(Estudiante::class, 'estudiante_tutor', 'tutor_id', 'estudiante_id')
-            ->withPivot('gestion_id', 'Activa')
-            ->withTimestamps();
+        return $this->hasMany(Estudiante::class, 'tutor_id', 'id_tutor');
     }
+    // public function estudiantes()
+    // {
+    //     return $this->belongsToMany(Estudiante::class, 'estudiante_tutor', 'tutor_id', 'estudiante_id')
+    //         ->withPivot('gestion_id', 'Activa')
+    //         ->withTimestamps();
+    // }
 
     public function gestion()
     {
@@ -45,6 +47,7 @@ class Tutor extends Model
     {
         return $this->hasMany(Revicion::class, 'tutor_id');
     }
-
+    
+   
 
 }

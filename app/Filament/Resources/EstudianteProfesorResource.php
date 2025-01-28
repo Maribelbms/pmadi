@@ -9,7 +9,10 @@ use App\Models\EstudianteGestion;
 use App\Models\ProfesorUnidad;
 use App\Models\UnidadEducativa;
 use App\Models\Gestion;
+use App\Models\Tutor;
 use Filament\Forms;
+use Filament\Forms\Components;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Card;
@@ -180,16 +183,33 @@ class EstudianteProfesorResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Action::make('Asignar Tutor')
-                    ->icon('heroicon-o-user')
-                    ->button()
-                    ->url(fn ($record) => route('asignar-tutor', $record->id_estudiante)),
+                Tables\Actions\Action::make('asignarTutor')
+    ->label('Asignar Tutor')
+    ->icon('heroicon-o-user')
+    ->modalHeading('Asignar Tutor')
+    ->modalButton('Guardar') // Botón principal del modal
+    ->modalWidth('lg') // Tamaño del modal: sm, md, lg, xl
+    ->action(function (Model $record, array $data) {
+        // Lógica para asignar el tutor al estudiante
+        $record->tutor_id = $data['tutor_id'];
+        $record->save();
+
+        Notification::make()
+            ->title('Tutor asignado correctamente')
+            ->success()
+            ->send();
+    })
+    ->form([
+        Forms\Components\Select::make('tutor_id')
+            ->label('Tutor')
+            ->options(Tutor::all()->pluck('nombre_completo', 'id'))
+            ->searchable()
+            ->required(),
+    ])
+
+            
             ])
-            
 
-
-
-            
 
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

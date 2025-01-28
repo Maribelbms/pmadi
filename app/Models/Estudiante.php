@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Auth;
 
 class Estudiante extends Model
 {
@@ -25,6 +27,13 @@ class Estudiante extends Model
         'expedido',
         'sexo',
         'rude',
+        'nivel',
+        'curso',
+        'paralelo',
+        'porcentaje_asistencia',
+        'habilitado',
+        'tutor_id',
+        'unidad_educativa_id',
 
 
     ];
@@ -33,7 +42,7 @@ class Estudiante extends Model
     public function tutores()
     {
         return $this->belongsToMany(Tutor::class, 'estudiante_tutor', 'estudiante_id', 'tutor_id')
-            ->withPivot('gestion_id', 'activo')
+            ->withPivot('activo')
             ->withTimestamps();
     }
     public function pagos()
@@ -49,7 +58,7 @@ class Estudiante extends Model
 
     public function unidadEducativa()
     {
-        return $this->belongsTo(UnidadEducativa::class, 'unidad_educativa_id');
+        return $this->belongsTo(UnidadEducativa::class, 'unidad_educativa_id', 'id_unidad_educativa');
     }
 
     public function reviciones()
@@ -79,5 +88,40 @@ class Estudiante extends Model
     {
         return $this->hasOne(EstudianteGestion::class, 'estudiante_id', 'id_estudiante');
     }
+    public function tutor()
+    {
+        return $this->belongsTo(Tutor::class, 'tutor_id', 'id_tutor');
+    }
+    public function profesorUnidad()
+    {
+        return $this->hasOne(ProfesorUnidad::class, 'unidad_educativa_id', 'unidad_educativa_id');
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($estudiante) {
+            // Obtener al tutor relacionado
+            $tutor = Tutor::find($estudiante->tutor_id);
+            // $tutores = $estudiante->tutores;
+
+            if ($tutor) {
+                // Contar cuántos estudiantes están relacionados con este tutor
+                $relatedStudentsCount = $tutor->estudiantes()->count();
+
+                if ($relatedStudentsCount <= 1) {
+                    // Si el tutor solo tiene este estudiante, elimina al tutor lógicamente
+                    $tutor->delete();
+                }
+            }
+            Log::info("El estudiante {$estudiante->id_estudiante} fue eliminado por el usuario ID " .Auth::user()->id);
+
+        });
+    }
+   
+
+
+
+
 
 }

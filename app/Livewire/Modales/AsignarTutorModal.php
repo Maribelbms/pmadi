@@ -16,8 +16,18 @@ class AsignarTutorModal extends Component
 
     protected $listeners = ['abrirModalAsignarTutor'];
 
+    public $abrirModal = false;
 
- 
+    public function abrirModalAsignarTutor($estudianteId)
+    {
+        $this->estudianteId = $estudianteId;
+
+        // Lanza el evento con un detalle claro
+        $this->dispatchBrowserEvent('openModal', [
+            'estudianteId' => $estudianteId,
+        ]);
+    }
+
 
 
     public function guardarTutor()
@@ -52,11 +62,7 @@ class AsignarTutorModal extends Component
         session()->flash('success', '¡Tutor asignado correctamente!');
         $this->emit('refreshTable'); // Refrescar la tabla en el recurso
     }
-    public function abrirModalAsignarTutor($estudianteId)
-    {
-        $this->estudianteId = $estudianteId;
-        $this->dispatchBrowserEvent('abrir-modal-asignar-tutor'); // Esto abre el modal
-    }
+
     public function render()
     {
         return view('livewire.modales.asignar-tutor-modal');

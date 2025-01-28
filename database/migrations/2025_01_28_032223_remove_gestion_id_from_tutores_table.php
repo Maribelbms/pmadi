@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('estudiante_gestion', function (Blueprint $table) {
-            $table->boolean('habilitado')->default(false); // Habilitado por porcentaje
+        Schema::table('tutores', function (Blueprint $table) {
+            $table->dropColumn('gestion_id');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('estudiante_gestion', function (Blueprint $table) {
-            $table->dropColumn('habilitado');
+        Schema::table('tutores', function (Blueprint $table) {
+            $table->unsignedBigInteger('gestion_id')->nullable();
         });
     }
 };

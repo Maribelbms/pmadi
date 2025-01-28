@@ -8,13 +8,27 @@ use App\Models\TutorEstudiante;
 use App\Models\Tutor;
 use App\Models\Estudiante;
 use App\Models\Gestion;
+use App\Models\ProfesorUnidad;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Wizard\Step;
+
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\TextInput;
+
 
 class TutorEstudianteResource extends Resource
 {
@@ -60,6 +74,23 @@ class TutorEstudianteResource extends Resource
                                         $set('gestion_id', null);
                                     }
                                 }),
+                            Forms\Components\Select::make('expedido_tutor')
+                                ->label('Expedición del CI del Tutor')
+                                ->options([
+                                    'QR' => 'QR',
+                                    'LP' => 'La Paz',
+                                    'CB' => 'Cochabamba',
+                                    'SC' => 'Santa Cruz',
+                                    'OR' => 'Oruro',
+                                    'PT' => 'Potosí',
+                                    'TJ' => 'Tarija',
+                                    'CH' => 'Chuquisaca',
+                                    'PD' => 'Pando',
+                                    'BN' => 'Beni',
+                                ])
+                                ->required()
+                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
+
 
                             Forms\Components\TextInput::make('primer_nombre_tutor')
                                 ->label('Primer Nombre del Tutor')
@@ -93,29 +124,15 @@ class TutorEstudianteResource extends Resource
                                 ->extraAttributes(['style' => 'text-transform: uppercase;'])
                                 ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
 
-                            Forms\Components\Select::make('expedido_tutor')
-                                ->label('Expedición del CI del Tutor')
-                                ->options([
-                                    'LP' => 'La Paz',
-                                    'CB' => 'Cochabamba',
-                                    'SC' => 'Santa Cruz',
-                                    'OR' => 'Oruro',
-                                    'PT' => 'Potosí',
-                                    'TJ' => 'Tarija',
-                                    'CH' => 'Chuquisaca',
-                                    'PD' => 'Pando',
-                                    'BN' => 'Beni',
-                                ])
-                                ->required()
-                                ->disabled(fn($get) => $get('ci_tutor') && Tutor::where('ci_tutor', $get('ci_tutor'))->exists()),
 
-                            Forms\Components\Select::make('gestion_id')
-                                ->label('Gestión')
-                                ->relationship('gestion', 'nombre_gestion')
-                                ->required(),
-                        ])->model(Tutor::class),
- 
-                   
+                            // Forms\Components\Select::make('gestion_id')
+                            //     ->label('Gestión')
+                            //     ->relationship('gestion', 'nombre_gestion')
+                            //     ->required(),
+                        ]),
+                    // ->model(Tutor::class),
+
+
                     // Paso 2: Ingreso de los detalles del Estudiante
                     Forms\Components\Wizard\Step::make('Detalles del Estudiante')
                         ->schema([
@@ -157,11 +174,16 @@ class TutorEstudianteResource extends Resource
                                 ->label('CI del Estudiante')
                                 ->required()
                                 ->maxLength(30)
-                                ->unique(Estudiante::class, 'ci'),
+                                ->numeric()
+                                ->required(),
+                                // ->rule( // Agregamos una regla de validación personalizada
+                                //     Rule::unique('estudiantes', 'ci')->whereNull('deleted_at')
+                                // ),
 
                             Forms\Components\Select::make('expedido')
                                 ->label('Expedido')
                                 ->options([
+                                    'QR' => 'QR',
                                     'LP' => 'La Paz',
                                     'CB' => 'Cochabamba',
                                     'SC' => 'Santa Cruz',
@@ -190,22 +212,31 @@ class TutorEstudianteResource extends Resource
 
                             Forms\Components\TextInput::make('nivel')
                                 ->label('Nivel')
-                                ->default('INICIAL')
-                                ->required()
-                                ->disabled(),
-
-                            Forms\Components\Select::make('curso')
-                                ->label('Curso')
-                                ->options([
-                                    '1' => 'PRIMERA SECCION',
-                                    '2' => 'SEGUNDA SECCION',
-                                ])
+                                ->default(fn() => ProfesorUnidad::where('profesor_id', Auth::user()->profesor->id ?? null)
+                                    ->value('nivel'))
+                                ->disabled()
                                 ->required(),
+
+                            Forms\Components\TextInput::make('curso')
+                                ->label('Curso')
+                                ->default(
+                                    fn() =>
+                                    collect([
+                                        '1' => 'PRIMERA SECCIÓN',
+                                        '2' => 'SEGUNDA SECCIÓN',
+                                    ])->get(ProfesorUnidad::where('profesor_id', Auth::user()->profesor->id ?? null)
+                                            ->value('curso'), 'SIN ASIGNACIÓN') // Si no encuentra valor, muestra "SIN ASIGNACIÓN"
+                                )
+                                ->disabled()
+                                ->required(),
+
 
                             Forms\Components\TextInput::make('paralelo')
                                 ->label('Paralelo')
-                                ->required()
-                                ->maxLength(2),
+                                ->default(fn() => ProfesorUnidad::where('profesor_id', Auth::user()->profesor->id ?? null)
+                                    ->value('paralelo'))
+                                ->disabled()
+                                ->required(),
 
                             Forms\Components\TextInput::make('porcentaje_asistencia')
                                 ->label('Porcentaje de Asistencia')
@@ -230,46 +261,116 @@ class TutorEstudianteResource extends Resource
             ]);
 
     }
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+        $profesor = $user->profesor;
+
+        // Si el usuario no tiene un profesor asociado, evitar que vea registros
+        if (!$profesor) {
+            return parent::getEloquentQuery()->whereNull('id_estudiante');
+        }
+
+        return parent::getEloquentQuery()
+
+            ->withNombreCompleto()
+            ->whereHas('unidadEducativa', function ($query) use ($profesor) {
+                $query->where('id_unidad_educativa', $profesor->unidad_educativa_id);
+            })
+            ->whereHas('profesorUnidad', function ($query) use ($profesor) {
+                $query->where('profesor_id', $profesor->id)
+                    ->whereColumn('curso', 'estudiantes.curso')
+                    ->whereColumn('paralelo', 'estudiantes.paralelo');
+            })
+            ->with([
+                'tutor' => function ($query) {
+                    $query->select(
+                        'id_tutor',
+                        'ci_tutor',
+                        DB::raw("CONCAT(
+                        primer_nombre_tutor, ' ', 
+                        COALESCE(segundo_nombre_tutor, ''), ' ', 
+                        primer_apellido_tutor, ' ', 
+                        COALESCE(segundo_apellido_tutor, ''), ' ',
+                        COALESCE(tercer_apellido_tutor, '')
+                    ) AS nombre_completo_tutor")
+                    );
+
+                }
+
+            ]);
+    }
+
+
+
+
+
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('primer_nombre')
-                    ->label('Nombre del Estudiante')
-                    ->sortable()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('primer_apellido')
-                    ->label('Apellido del Estudiante')
-                    ->sortable()
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('nombre_completo')
+                    ->label('Nombre Completo Estudiante'),
+
+
                 Tables\Columns\TextColumn::make('ci')
                     ->label('CI del Estudiante')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('tutor.primer_nombre_tutor')
-                    ->label('Nombre del Tutor')
+                Tables\Columns\TextColumn::make('curso')
+                    ->label('Curso')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('gestion.nombre_gestion')
-                    ->label('Gestión')
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('paralelo')
+                    ->label('Paralelo')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tutor.nombre_completo_tutor')
+                    ->label('Nombre Completo Tutor'),
+                Tables\Columns\TextColumn::make('ci_tutor')
+                    ->label('CI del Tutor')
+                    ->sortable()
+                    ->searchable(),
+                // Tables\Columns\TextColumn::make('gestion.nombre_gestion')
+                //     ->label('Gestión')
+                //     ->sortable(),
                 Tables\Columns\BooleanColumn::make('habilitado')
-                    ->label('Habilitado'),
+                    ->label('Habilitado')
+                    ->colors([
+                        'success' => 'si',
+                        'danger' => 'no',
+                    ]),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()
                     ->sortable(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('verDetalles')
+                    ->label('Ver Detalles')
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading('Detalles del Estudiante y Tutor')
+                    ->modalWidth('lg')
+                    ->modalSubmitAction(false) 
+                    ->modalContent(fn($record) => view('filament.modals.detalle-estudiante', [
+                        'estudiante' => $record->load('tutor') // Cargar la relación si aún no está cargada
+                    ]))
+                    ,
+                    Tables\Actions\DeleteAction::make()
+                    ->label('Eliminar')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation(),
+                    
             ])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
+            // ->actions([
+            //     Tables\Actions\EditAction::make(),
+            // ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

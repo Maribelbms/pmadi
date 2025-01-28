@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Providers;
+use App\Models\UnidadEducativa;
 
 use Illuminate\Support\ServiceProvider;
+
 
 class AppServiceProvider extends ServiceProvider
 {

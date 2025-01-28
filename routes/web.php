@@ -18,5 +18,5 @@ Route::post('/verificar-datos', [VerificationController::class, 'verificarDatos'
 //     ->name('filament.resources.tutors.create');
 
 
-Route::get('/asignar-tutor/{id}', AsignarTutorModal::class)
-    ->name('asignar-tutor');
+// Route::get('/asignar-tutor/{id}', AsignarTutorModal::class)
+//     ->name('asignar-tutor');
