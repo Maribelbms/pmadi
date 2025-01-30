@@ -34,9 +34,10 @@ class TutorEstudianteResource extends Resource
 {
     protected static ?string $model = Estudiante::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Ingreso de Datos';
-    protected static ?string $navigationGroup = 'Tutores y Estudiantes';
+    protected static ?string $navigationGroup = 'Registro';
+    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $pluralLabel = 'Estudiante y Tutor';
+    protected static ?string $label = 'Estudiante';
 
     public static function form(Form $form): Form
     {
@@ -172,7 +173,6 @@ class TutorEstudianteResource extends Resource
 
                             Forms\Components\TextInput::make('ci')
                                 ->label('CI del Estudiante')
-                                ->required()
                                 ->maxLength(30)
                                 ->numeric()
                                 ->required(),
@@ -233,7 +233,7 @@ class TutorEstudianteResource extends Resource
 
                             Forms\Components\TextInput::make('paralelo')
                                 ->label('Paralelo')
-                                ->default(fn() => ProfesorUnidad::where('profesor_id', Auth::user()->profesor->id ?? null)
+                                ->default(fn()=> ProfesorUnidad::where('profesor_id', Auth::user()->profesor->id ?? null)
                                     ->value('paralelo'))
                                 ->disabled()
                                 ->required(),
@@ -329,7 +329,7 @@ class TutorEstudianteResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tutor.nombre_completo_tutor')
                     ->label('Nombre Completo Tutor'),
-                Tables\Columns\TextColumn::make('ci_tutor')
+                Tables\Columns\TextColumn::make('tutor.ci_tutor')
                     ->label('CI del Tutor')
                     ->sortable()
                     ->searchable(),

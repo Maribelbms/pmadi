@@ -37,10 +37,12 @@ class UnidadEducativaResource extends Resource
                 TextInput::make('nombre_unidad')
                     ->label('Nombre de la Unidad')
                     ->required()
+                    ->unique()
                     ->maxLength(100),
 
                 TextInput::make('codigo_sie')
                     ->label('Código SIE')
+                    ->unique()
                     ->required()
                     ->maxLength(100),
 

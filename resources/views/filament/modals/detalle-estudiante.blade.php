@@ -14,7 +14,7 @@
         <div><span class="font-semibold text-gray-100">🏫 Paralelo:</span> {{ $estudiante->paralelo ?? 'N/A' }}</div>
         <div><span class="font-semibold text-gray-100">📑 RUDE:</span> {{ $estudiante->rude ?? 'N/A' }}</div>
         <div><span class="font-semibold text-gray-100">📊 Asistencia:</span> {{ $estudiante->porcentaje_asistencia ?? 'N/A' }}%</div>
-        <div><span class="font-semibold text-gray-100">📍 Expedido en:</span>{{ $estudiante->expedido ?? 'N/A'}}</div>
+        <div><span class="font-semibold text-gray-100">📍 Expedido en: </span>{{ $estudiante->expedido ?? 'N/A'}}</div>
         <div>
             <span class="font-semibold text-gray-100">✅ Habilitado:</span> 
             <span class="px-3 py-1 text-white text-sm rounded-lg font-bold 

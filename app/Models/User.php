@@ -80,6 +80,10 @@ public function profesor()
  {
      return true;
  }
+ public function profesorUnidad()
+{
+    return $this->hasMany(ProfesorUnidad::class, 'profesor_id', 'id');
+}
 
 
 

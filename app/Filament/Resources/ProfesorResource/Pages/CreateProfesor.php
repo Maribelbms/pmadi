@@ -4,6 +4,9 @@ namespace App\Filament\Resources\ProfesorResource\Pages;
 
 use App\Filament\Resources\ProfesorResource;
 use Filament\Actions;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use App\Models\Director;
 use Filament\Resources\Pages\CreateRecord;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +18,14 @@ class CreateProfesor extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
 {
+    $director = Director::where('user_id', Auth::id())->first();
+    if (!$director || !$director->unidad_educativa_id) {
+        throw ValidationException::withMessages([
+            'unidad_educativa_id' => 'El Director no tiene una Unidad Educativa asignada.',
+        ]);
+    }
+    $unidadEducativaId = $director->unidad_educativa_id;
+
     // Crear o buscar el usuario en la tabla `users`
     $user = User::firstOrCreate(
         ['email' => $data['email']], // Condición para evitar duplicados
@@ -47,7 +58,7 @@ class CreateProfesor extends CreateRecord
         \App\Models\ProfesorUnidad::updateOrCreate(
             [
                 'profesor_id' => $profesor->id,
-                'unidad_educativa_id' => $data['unidad_educativa_id'],
+                'unidad_educativa_id' => $unidadEducativaId,
             ],
             [
                 'nivel' => $data['nivel'],

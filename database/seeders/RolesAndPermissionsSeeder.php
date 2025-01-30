@@ -45,6 +45,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $profesorPermissions = [
             'view students',
             'create students',
+            'delete students',
+            'edit students',
             'update students',
             'view notifications',
             'mark notifications as read',

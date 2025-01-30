@@ -9,6 +9,7 @@ class ProfesorUnidad extends Model
     use HasFactory;
     protected $table = 'profesor_unidad'; 
     protected $fillable = [
+        
         'profesor_id',
         'unidad_educativa_id',
         'nivel',
