@@ -27,19 +27,9 @@ class Profesor extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    // Relación con la tabla intermedia `profesor_unidad`
-    // public function asignaciones()
-    // {
-    //     return $this->hasMany(ProfesorUnidad::class, 'profesor_id');
-    // }
-    // public function unidades()
-    // {
-    //     return $this->hasMany(ProfesorUnidad::class);
-    // }
-    // Relación con la tabla profesor_unidad
     public function profesorUnidad()
     {
-        return $this->hasMany(ProfesorUnidad::class);
+        return $this->hasMany(ProfesorUnidad::class, 'profesor_id');
     }
     public function unidadEducativa()
     {

@@ -22,7 +22,7 @@ class CreateDirector extends CreateRecord
 
         if ($existingDirector) {
              throw ValidationException::withMessages([
-                 'unidad_educativa_id' => 'Esta unidad educativa ya tiene un director asignado.',
+                 'date.unidad_educativa_id' => 'Esta unidad educativa ya tiene un director asignado.',
              ]);
             // Log::error('Unidad Educativa ya tiene un director asignado: ' . $data['unidad_educativa_id']);
             // throw ValidationException::withMessages([
@@ -39,7 +39,7 @@ class CreateDirector extends CreateRecord
             'password' => bcrypt($data['user']['password']),
         ]);
 
-        $user->roles()->attach(3);
+        $user->assignRole('director');
         $data['user_id'] = $user->id;
         $data['email'] = $data['user']['email'];
 

@@ -8,6 +8,7 @@ use App\Models\ProfesorUnidad;
 use App\Models\UnidadEducativa;
 use App\Models\User;
 use Filament\Forms;
+
 use Illuminate\Support\Facades\Auth;
 use App\Models\Director;
 use Filament\Forms\Components\Card;
@@ -17,6 +18,7 @@ use Filament\Forms\Components\Section;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 
 class ProfesorResource extends Resource
@@ -32,6 +34,7 @@ class ProfesorResource extends Resource
                     ->schema([
                         TextInput::make('ci')
                             ->label('Cédula de Identidad')
+                            ->unique()
                             ->required(),
                         TextInput::make('primer_nombre')
                             ->label('Primer Nombre')
@@ -85,11 +88,28 @@ class ProfesorResource extends Resource
 
                         TextInput::make('paralelo')
                             ->label('Paralelo')
-                            ->required(),
+                            ->required()
+                            ->live()
+                            ->validationAttribute('paralelo'),
+                            
+                          
                     ])
                     ->columns(2),
             ]);
     }
+    public static function getEloquentQuery(): Builder
+    {
+        $user = Auth::user();
+
+        if ($user && $user->director && $user->director->unidad_educativa_id) {
+            return Profesor::query()->whereHas('profesorUnidad', function ($query) use ($user) {
+                $query->where('unidad_educativa_id', $user->director->unidad_educativa_id);
+            });
+        }
+
+        return Profesor::query()->whereRaw('1 = 0'); // Si el usuario no es director o no tiene unidad educativa, devolver una consulta vacía
+    }
+    
 
     public static function table(Tables\Table $table): Tables\Table
     {
