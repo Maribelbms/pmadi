@@ -70,6 +70,7 @@ class CreateProfesor extends CreateRecord
                 'email' => $data['email'],
                 'telefono' => $data['telefono'],
                 'activo' => $data['activo'] ?? true,
+                'unidad_educativa_id'=>$unidadEducativaId,
             ]);
 
             // Actualizar o crear la relación con unidad educativa

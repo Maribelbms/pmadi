@@ -175,10 +175,11 @@ class TutorEstudianteResource extends Resource
                                 ->label('CI del Estudiante')
                                 ->maxLength(30)
                                 ->numeric()
+                                ->unique('estudiantes', 'ci')
                                 ->required(),
-                                // ->rule( // Agregamos una regla de validación personalizada
-                                //     Rule::unique('estudiantes', 'ci')->whereNull('deleted_at')
-                                // ),
+                            // ->rule( // Agregamos una regla de validación personalizada
+                            //     Rule::unique('estudiantes', 'ci')->whereNull('deleted_at')
+                            // ),
 
                             Forms\Components\Select::make('expedido')
                                 ->label('Expedido')
@@ -233,7 +234,7 @@ class TutorEstudianteResource extends Resource
 
                             Forms\Components\TextInput::make('paralelo')
                                 ->label('Paralelo')
-                                ->default(fn()=> ProfesorUnidad::where('profesor_id', Auth::user()->profesor->id ?? null)
+                                ->default(fn() => ProfesorUnidad::where('profesor_id', Auth::user()->profesor->id ?? null)
                                     ->value('paralelo'))
                                 ->disabled()
                                 ->required(),
@@ -261,6 +262,8 @@ class TutorEstudianteResource extends Resource
             ]);
 
     }
+    
+
     public static function getEloquentQuery(): Builder
     {
         $user = Auth::user();
@@ -300,8 +303,6 @@ class TutorEstudianteResource extends Resource
 
             ]);
     }
-
-
 
 
 
@@ -353,17 +354,17 @@ class TutorEstudianteResource extends Resource
                     ->icon('heroicon-o-eye')
                     ->modalHeading('Detalles del Estudiante y Tutor')
                     ->modalWidth('lg')
-                    ->modalSubmitAction(false) 
+                    ->modalSubmitAction(false)
                     ->modalContent(fn($record) => view('filament.modals.detalle-estudiante', [
                         'estudiante' => $record->load('tutor') // Cargar la relación si aún no está cargada
                     ]))
-                    ,
-                    Tables\Actions\DeleteAction::make()
+                ,
+                Tables\Actions\DeleteAction::make()
                     ->label('Eliminar')
                     ->icon('heroicon-o-trash')
                     ->color('danger')
                     ->requiresConfirmation(),
-                    
+
             ])
             ->filters([
                 //

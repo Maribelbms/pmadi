@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TutorEstudianteResource\Pages;
 use App\Filament\Resources\TutorEstudianteResource;
 use App\Models\Tutor;
 use App\Models\Estudiante;
+use App\Models\Revicion;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -42,6 +43,8 @@ class CreateTutorEstudiante extends CreateRecord
 
         // Asignar el ID del tutor al estudiante
         $data['tutor_id'] = $tutor->id_tutor;
+
+        
         
         
 

@@ -32,11 +32,11 @@ class UnidadEducativa extends Model
             ->where('role_id', 4);
     }
 
-    public function profesores()
-    {
-        return $this->belongsToMany(User::class, 'profesor_unidad', 'unidad_educativa_id', 'user_id', 'profesor_id')
-            ->where('role_id', 4);
-    }
+    // public function profesores()
+    // {
+    //     return $this->belongsToMany(User::class, 'profesor_unidad', 'unidad_educativa_id', 'user_id', 'profesor_id')
+    //         ->where('role_id', 4);
+    // }
     // Relación con el director (uno a uno)
     public function director()
     {

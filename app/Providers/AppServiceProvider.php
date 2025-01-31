@@ -1,8 +1,13 @@
 <?php
 
 namespace App\Providers;
+
+use App\Models\Estudiante;
+use App\Models\Revicion;
+use App\Observers\RevicionObserver;
 use App\Models\UnidadEducativa;
 
+use App\Observers\EstudianteObserver;
 use Illuminate\Support\ServiceProvider;
 
 
@@ -22,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
+        Estudiante::observe(EstudianteObserver::class);
+        Revicion::observe(RevicionObserver::class);
     }
 }

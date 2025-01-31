@@ -43,7 +43,7 @@ class ProfesorUnidad extends Model
     }
     public function unidadEducativa()
     {
-        return $this->belongsTo(UnidadEducativa::class, 'unidad_educativa_id');
+        return $this->belongsTo(UnidadEducativa::class, 'unidad_educativa_id', 'id_unidad_educativa');
     }
 
 }

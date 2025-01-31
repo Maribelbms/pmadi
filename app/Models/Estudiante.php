@@ -63,8 +63,9 @@ class Estudiante extends Model
 
     public function reviciones()
     {
-        return $this->hasMany(Revicion::class, 'estudiante_id');
+        return $this->hasMany(Revicion::class, 'estudiante_id', 'id_estudiante');
     }
+    
     public function gestiones()
     {
         return $this->hasMany(EstudianteGestion::class, 'estudiante_id');

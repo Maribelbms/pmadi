@@ -84,6 +84,10 @@ public function profesor()
 {
     return $this->hasMany(ProfesorUnidad::class, 'profesor_id', 'id');
 }
+public function director()
+{
+    return $this->hasOne(Director::class, 'user_id', 'id');
+}
 
 
 

@@ -10,6 +10,7 @@ use App\Models\User;
 use Filament\Forms;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Director;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\TextInput;
@@ -62,37 +63,42 @@ class ProfesorResource extends Resource
                             ->label('Contraseña')
                             ->password()
                             ->required()
-                            ->dehydrateStateUsing(fn ($state) => Hash::make($state)),
+                            ->dehydrateStateUsing(fn($state) => Hash::make($state)),
                     ])
                     ->columns(2),
 
                 Section::make('Asignación de Unidad Educativa')
                     ->schema([
                         Forms\Components\Hidden::make('unidad_educativa_id')
-                    ->default(function () {
-                        return Director::where('user_id', Auth::id())->value('unidad_educativa_id');
-                    }),
+                            ->default(function () {
+                                return Director::where('user_id', Auth::id())->value('unidad_educativa_id');
+                            }),
 
 
                         TextInput::make('nivel')
                             ->label('Nivel')
                             ->default('INICIAL')
                             ->disabled(),
+                        // ->default(fn ($record) => $record->nivel),
 
-                            Forms\Components\Select::make('curso')
+                        Forms\Components\Select::make('curso')
                             ->label('Curso')
                             ->options([
                                 '1' => 'PRIMERA SECCION',
                                 '2' => 'SEGUNDA SECCION',
-                            ]),
+
+                            ])
+                            ->required(),
+
 
                         TextInput::make('paralelo')
                             ->label('Paralelo')
                             ->required()
                             ->live()
                             ->validationAttribute('paralelo'),
-                            
-                          
+                        // ->default(fn ($record) => $record->paralelo),
+
+
                     ])
                     ->columns(2),
             ]);
@@ -101,37 +107,76 @@ class ProfesorResource extends Resource
     {
         $user = Auth::user();
 
-        if ($user && $user->director && $user->director->unidad_educativa_id) {
-            return Profesor::query()->whereHas('profesorUnidad', function ($query) use ($user) {
-                $query->where('unidad_educativa_id', $user->director->unidad_educativa_id);
-            });
+        if ($user && $user->director) {
+            $unidadEducativaId = $user->director->unidad_educativa_id;
+
+            Log::info('Unidad Educativa del Director: ' . $unidadEducativaId);
+
+            if ($unidadEducativaId) {
+                return Profesor::query()
+                    ->whereHas('profesorUnidad', function ($query) use ($unidadEducativaId) {
+                        $query->where('unidad_educativa_id', $unidadEducativaId);
+                    })
+                    ->with('profesorUnidad.unidadEducativa');
+            }
         }
 
-        return Profesor::query()->whereRaw('1 = 0'); // Si el usuario no es director o no tiene unidad educativa, devolver una consulta vacía
+        Log::info('El usuario no es director o no tiene unidad educativa.');
+
+        return Profesor::query()->whereRaw('1 = 0');
     }
-    
+
+
 
     public static function table(Tables\Table $table): Tables\Table
     {
         return $table
             ->columns([
-                TextColumn::make('ci')->label('CI'),
-                TextColumn::make('primer_nombre')->label('Nombre'),
-                TextColumn::make('primer_apellido')->label('Apellido'),
-                TextColumn::make('user.email')->label('Correo'),
-                TextColumn::make('profesorUnidad.nivel')->label('Nivel'),
-                TextColumn::make('profesorUnidad.curso')->label('Curso'),
-                TextColumn::make('profesorUnidad.paralelo')->label('Paralelo'),
+                TextColumn::make('ci')
+                    ->label('Cédula de Identidad')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('primer_nombre')
+                    ->label('Nombre')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('primer_apellido')
+                    ->label('Apellido')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('user.email')
+                    ->label('Correo Electrónico')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('profesorUnidad.curso')
+                    ->label('Curso')
+                    ->sortable()
+                    ->searchable(),
+
+                TextColumn::make('profesorUnidad.paralelo')
+                    ->label('Paralelo')
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('profesorUnidad.unidadEducativa.nombre_unidad')
+                    ->label('Unidad Educativa')
+                    ->sortable()
+                    ->searchable(),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->filters([
-                //
-            ]);
+
+            ])
+            ->defaultSort('primer_apellido');
     }
 
     public static function getRelations(): array
     {
         return [
-            
+
         ];
     }
 

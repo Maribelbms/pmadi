@@ -11,6 +11,7 @@ class EstudianteChart extends ChartWidget
 {
     
     protected static ?string $heading = '📊 Distribución de Estudiantes por Género';
+    protected static ?int $sort = 2;
 
     protected function getData(): array
     {

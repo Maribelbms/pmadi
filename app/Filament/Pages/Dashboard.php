@@ -11,7 +11,9 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            
+            PanelesUsuarios::class, // 📌 Cards primero
+        EstudianteChart::class, // 📊 Gráficos después
+
         ];
     }
 }

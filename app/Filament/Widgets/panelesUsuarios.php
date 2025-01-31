@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 class PanelesUsuarios extends BaseWidget
 {
     protected static ?string $heading = '📌 Panel de Estadísticas';
+    protected static bool $isLazy = false;
+    protected static bool $isStatic = true;
+    protected static ?int $sort = 1; // Prioridad alta para que aparezca arriba
+    
 
     protected function getStats(): array
     {
@@ -82,4 +86,5 @@ class PanelesUsuarios extends BaseWidget
             EstudianteChart::class, // 📊 La gráfica de distribución de estudiantes
         ];
     }
+    
 }

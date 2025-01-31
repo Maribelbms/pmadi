@@ -45,9 +45,10 @@ class Tutor extends Model
     }
     public function reviciones()
     {
-        return $this->hasMany(Revicion::class, 'tutor_id');
+        return $this->hasMany(Revicion::class, 'tutor_id', 'id_tutor');
     }
-    
-   
+
+
+
 
 }
